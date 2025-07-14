@@ -9,12 +9,14 @@ class Notes extends Component
 {
     public $notes;
     public ?int $selectedNoteId = null;
+    public ?int $selectedCategoryIdForNotes = null;
 
     protected $listeners = [
         'noteCreated' => 'refreshAndSelectNote',
         'noteUpdated' => 'refreshAndSelectNote',
         'noteSelected' => 'setSelectedNote',
         'clearEditor' => 'clearSelection',
+        'categorySelected' => 'filterNotesByCategory',
     ];
 
     public function mount()
@@ -22,14 +24,18 @@ class Notes extends Component
         $this->loadNotes();
     }
 
-    public function loadNotes()
+    public function loadNotes(int $categoryId = null)
     {
-        $this->notes = Note::latest()->get();
+        $this->notes = Note::latest()
+            ->when($categoryId, function ($query) use ($categoryId) {
+                return $query->where('category_id', $categoryId);
+            })
+            ->get();
     }
 
     public function refreshAndSelectNote($id = null)
     {
-        $this->loadNotes();
+        $this->loadNotes($this->selectedCategoryIdForNotes);
         $this->selectedNoteId = $id;
     }
 
@@ -52,6 +58,13 @@ class Notes extends Component
             $this->selectedNoteId = $noteId;
             $this->dispatch('editNote', id: $noteId);
         }
+    }
+
+    public function filterNotesByCategory(?int $categoryId)
+    {
+        $this->selectedCategoryIdForNotes = $categoryId;
+        $this->loadNotes($categoryId);
+        $this->dispatch('clearEditor');
     }
 
     public function render()
