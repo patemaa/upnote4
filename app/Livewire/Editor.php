@@ -16,7 +16,7 @@ class Editor extends Component
         'body' => 'required_without:title',
     ];
 
-    protected $listeners = ['editNote' => 'loadNote'];
+    protected $listeners = ['editNote' => 'loadNote', 'clearEditor' => 'newNote'];
 
     public function mount()
     {
@@ -25,20 +25,38 @@ class Editor extends Component
 
     public function loadNote($id)
     {
+        if ($id === null || ($this->note && $this->note->id == $id)) {
+            $this->newNote();
+            return;
+        }
+
         $this->note = Note::find($id);
-        $this->title = $this->note->title;
-        $this->body = $this->note->body;
+        if ($this->note) {
+            $this->title = $this->note->title;
+            $this->body = $this->note->body;
+            $this->dispatch('noteSelected', id: $this->note->id);
+        } else {
+            $this->newNote();
+        }
     }
 
     public function newNote()
     {
         $this->reset(['note', 'title', 'body']);
         $this->note = new Note();
+        $this->dispatch('noteSelected', id: null);
     }
 
     public function updated($property)
     {
         if (!in_array($property, ['title', 'body'])) {
+            return;
+        }
+
+        if (empty($this->title) && empty($this->body)) {
+            if ($this->note && !$this->note->exists) {
+                $this->newNote();
+            }
             return;
         }
 
@@ -48,15 +66,18 @@ class Editor extends Component
             $this->note->category_id = 1;
             $this->note->save();
 
-            $this->dispatch('note-created', id: $this->note->id);
+            $this->dispatch('noteCreated', id: $this->note->id);
+            $this->dispatch('noteSelected', id: $this->note->id);
+
+
         } else {
             $this->note->update([
                 'title' => $this->title ?: 'Başlıksız Not',
                 'body' => $this->body,
             ]);
+            $this->dispatch('noteUpdated', id: $this->note->id);
+            $this->dispatch('noteSelected', id: $this->note->id);
         }
-
-        $this->dispatch('note-saved');
     }
 
     public function render()
