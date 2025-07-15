@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Models\Category;
 use App\Models\Note;
 use Livewire\Component;
 
@@ -10,6 +11,9 @@ class Editor extends Component
     public ?Note $note = null;
     public string $title = '';
     public string $body = '';
+    public $categories = [];
+    public $showCategoryDropdown = false;
+    public $noteCategoryId = null;
 
     protected $rules = [
         'title' => 'required_without:body',
@@ -23,9 +27,10 @@ class Editor extends Component
 
     public function mount()
     {
-        if(request()->has('note')) {
+        if (request()->has('note')) {
             $this->loadNote(request()->get('note'));
         }
+        $this->categories = Category::all();
     }
 
     public function loadNote($id)
@@ -39,6 +44,7 @@ class Editor extends Component
         if ($this->note) {
             $this->title = $this->note->title;
             $this->body = $this->note->body;
+            $this->noteCategoryId = $this->note->category_id;
             $this->dispatch('noteSelected', id: $this->note->id);
         } else {
             $this->newNote();
@@ -47,7 +53,7 @@ class Editor extends Component
 
     public function newNote()
     {
-        $this->reset(['note', 'title', 'body']);
+        $this->reset(['note', 'title', 'body', 'noteCategoryId']);
         $this->note = new Note();
         $this->dispatch('noteSelected', id: null);
     }
@@ -82,6 +88,22 @@ class Editor extends Component
             ]);
             $this->dispatch('noteUpdated', id: $this->note->id);
             $this->dispatch('noteSelected', id: $this->note->id);
+        }
+    }
+
+    public function toggleCategoryDropdown()
+    {
+        $this->showCategoryDropdown = !$this->showCategoryDropdown;
+    }
+
+    public function assignCategory($categoryId)
+    {
+        if ($this->note && $this->note->exists) {
+            $this->note->category_id = $categoryId;
+            $this->note->save();
+
+            $this->noteCategoryId = $categoryId;
+            $this->showCategoryDropdown = false;
         }
     }
 
