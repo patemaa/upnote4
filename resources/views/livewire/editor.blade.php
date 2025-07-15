@@ -9,7 +9,8 @@
                 placeholder="Title"
                 class="bg-transparent w-full px-4 py-3 focus:outline-none focus:ring-0 text-xl placeholder-gray-300"
         >
-        <button @click="showDropdown = !showDropdown" class="text-white text-sm bg-purple-400/50 hover:bg-purple-400/80 rounded mr-2">
+        <button @click="showDropdown = !showDropdown"
+                class="text-white text-sm bg-purple-400/50 hover:bg-purple-400/80 rounded mr-2">
             Choose Category
         </button>
     </div>
@@ -52,5 +53,4 @@
     <div class="px-2 text-white/70">
         <p>Karakter Sayısı : {{ strlen($body) }}</p>
     </div>
-
 </div>

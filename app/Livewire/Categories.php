@@ -20,14 +20,14 @@ class Categories extends Component
     public function mount()
     {
         $this->loadCategories();
-        if (request()->get('category')) {
-            $this->selectCategory(request()->get('category'));
+        if ($this->selectedCategoryId) {
+            $this->dispatch('categorySelected', categoryId: $this->selectedCategoryId);
         }
     }
 
     public function loadCategories()
     {
-        $this->categories = Category::query()->latest()->when(! $this->showTrash, function ($query) {
+        $this->categories = Category::query()->latest()->when(!$this->showTrash, function ($query) {
             return $query->whereNull('deleted_at');
         })->get();
 
@@ -84,6 +84,12 @@ class Categories extends Component
     public function permanentDeleteCategory(int $categoryId)
     {
         Category::onlyTrashed()->findOrFail($categoryId)->forceDelete();
+        $this->loadCategories();
+    }
+
+    public function restoreCategory(int $categoryId)
+    {
+        Category::onlyTrashed()->findOrFail($categoryId)->restore();
         $this->loadCategories();
     }
 

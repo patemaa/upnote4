@@ -28,7 +28,11 @@ class Notes extends Component
 
     public function mount()
     {
-        $this->loadNotes();
+        if (request()->get('category')) {
+            $this->filterNotesByCategory(request()->get('category'));
+        } else {
+            $this->loadNotes();
+        }
     }
 
     public function loadNotes(int $categoryId = null)
@@ -37,7 +41,7 @@ class Notes extends Component
             ->when($categoryId, function ($query) use ($categoryId) {
                 return $query->where('category_id', $categoryId);
             })
-            ->when(! $this->showTrash, function ($query) {
+            ->when(!$this->showTrash, function ($query) {
                 return $query->whereNull('deleted_at');
             })
             ->get();
@@ -105,6 +109,12 @@ class Notes extends Component
     {
         Note::onlyTrashed()->findOrFail($noteId)->forceDelete();
         $this->loadNotes($this->selectedCategoryIdForNotes);
+    }
+
+    public function restoreNote(int $noteId)
+    {
+        Note::onlyTrashed()->findOrFail($noteId)->restore();
+        $this->loadNotes();
     }
 
     public function render()
