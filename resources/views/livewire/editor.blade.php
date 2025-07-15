@@ -1,5 +1,5 @@
 <div x-data="{ showDropdown: @entangle('showCategoryDropdown').defer }"
-     class="relative border border-emerald-600 rounded overflow-hidden basis-5/12 bg-emerald-600/50">
+     class="relative rounded overflow-hidden basis-5/13 bg-purple-300/50 px-1 py-1">
 
     <div class="flex justify-between items-center">
         <input
@@ -9,7 +9,9 @@
                 placeholder="Title"
                 class="bg-transparent w-full px-4 py-3 focus:outline-none focus:ring-0 text-xl placeholder-gray-300"
         >
-        <button @click="showDropdown = !showDropdown" class="text-white px-4">+</button>
+        <button @click="showDropdown = !showDropdown" class="text-white text-sm bg-purple-400/50 hover:bg-purple-400/80 rounded mr-2">
+            Choose Category
+        </button>
     </div>
 
     <div
@@ -23,7 +25,7 @@
             <button
                     wire:click="assignCategory({{ $category->id }})"
                     @click="showDropdown = false"
-                    class="w-full text-left px-3 py-1 hover:bg-emerald-100 text-black flex justify-between items-center @if($noteCategoryId == $category->id) bg-emerald-200 @endif"
+                    class="w-full text-left px-3 py-1 rounded hover:bg-purple-100 text-black flex justify-between items-center @if($noteCategoryId == $category->id) bg-purple-200 @endif"
                     type="button"
             >
                 {{ $category->name }}

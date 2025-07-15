@@ -10,11 +10,13 @@ use Livewire\Attributes\Url;
 class Notes extends Component
 {
     public $notes;
+    public $showTrash = false;
+    public $trashedNotes = [];
 
     #[Url(as: 'note')]
     public ?int $selectedNoteId = null;
     public ?int $selectedCategoryIdForNotes = null;
-    public $categoryName = 'Notes';
+    public $categoryName = 'Tüm Notlar';
 
     protected $listeners = [
         'noteCreated' => 'refreshAndSelectNote',
@@ -35,7 +37,13 @@ class Notes extends Component
             ->when($categoryId, function ($query) use ($categoryId) {
                 return $query->where('category_id', $categoryId);
             })
+            ->when(! $this->showTrash, function ($query) {
+                return $query->whereNull('deleted_at');
+            })
             ->get();
+
+        $this->trashedNotes = Note::onlyTrashed()->latest()->get();
+        $this->selectedCategoryIdForNotes = $categoryId;
     }
 
     public function refreshAndSelectNote($id = null)
@@ -68,12 +76,35 @@ class Notes extends Component
     public function filterNotesByCategory(?int $categoryId)
     {
         if ($categoryId === null) {
-            $this->notes = Note::all();
-            $this->categoryName = 'Notes';
+            $this->loadNotes();
+            $this->categoryName = 'Tüm Notlar';
         } else {
-            $this->notes = Note::where('category_id', $categoryId)->get();
-            $this->categoryName = Category::find($categoryId)->name;
+            $this->loadNotes($categoryId);
+            $category = Category::find($categoryId);
+            $this->categoryName = $category ? $category->name : 'Kategori Bulunamadı';
         }
+    }
+
+    public function deleteNote(int $noteId)
+    {
+        if ($noteId === $this->selectedNoteId) {
+            $this->selectedNoteId = null;
+            $this->dispatch('clearEditor');
+        }
+        Note::find($noteId)->delete();
+        $this->loadNotes($this->selectedCategoryIdForNotes);
+    }
+
+    public function toggleTrash()
+    {
+        $this->showTrash = !$this->showTrash;
+        $this->loadNotes($this->selectedCategoryIdForNotes);
+    }
+
+    public function permanentDeleteNote(int $noteId)
+    {
+        Note::onlyTrashed()->findOrFail($noteId)->forceDelete();
+        $this->loadNotes($this->selectedCategoryIdForNotes);
     }
 
     public function render()

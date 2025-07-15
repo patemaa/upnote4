@@ -27,6 +27,7 @@ class Editor extends Component
 
     public function mount()
     {
+        $this->note = new Note();
         if (request()->has('note')) {
             $this->loadNote(request()->get('note'));
         }
