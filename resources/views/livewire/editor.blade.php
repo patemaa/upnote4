@@ -14,4 +14,9 @@
             placeholder="Bir şeyler yaz..."
             class="bg-emerald-600/50 w-full px-4 py-2 min-h-[600px] focus:outline-none focus:ring-0 placeholder-gray-300"
     ></textarea>
+    <div class="bg-emerald-600/50 px-2">
+        <p>
+            Karakter Sayısı : {{ strlen($body) }}
+        </p>
+    </div>
 </div>

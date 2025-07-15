@@ -2,14 +2,19 @@
 
 namespace App\Livewire;
 
+use App\Models\Category;
 use App\Models\Note;
 use Livewire\Component;
+use Livewire\Attributes\Url;
 
 class Notes extends Component
 {
     public $notes;
+
+    #[Url(as: 'note')]
     public ?int $selectedNoteId = null;
     public ?int $selectedCategoryIdForNotes = null;
+    public $categoryName = 'Notes';
 
     protected $listeners = [
         'noteCreated' => 'refreshAndSelectNote',
@@ -36,7 +41,7 @@ class Notes extends Component
     public function refreshAndSelectNote($id = null)
     {
         $this->loadNotes($this->selectedCategoryIdForNotes);
-        $this->selectedNoteId = $id;
+        $this->setSelectedNote($id);
     }
 
     public function setSelectedNote($id)
@@ -62,9 +67,13 @@ class Notes extends Component
 
     public function filterNotesByCategory(?int $categoryId)
     {
-        $this->selectedCategoryIdForNotes = $categoryId;
-        $this->loadNotes($categoryId);
-        $this->dispatch('clearEditor');
+        if ($categoryId === null) {
+            $this->notes = Note::all();
+            $this->categoryName = 'Notes';
+        } else {
+            $this->notes = Note::where('category_id', $categoryId)->get();
+            $this->categoryName = Category::find($categoryId)->name;
+        }
     }
 
     public function render()

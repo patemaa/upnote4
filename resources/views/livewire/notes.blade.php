@@ -1,4 +1,5 @@
-<div class="px-5 py-5 bg-emerald-500/50 basis-4/12 rounded">
+<div class="px-5 py-5 bg-emerald-500/50 basis-4/12 rounded space-y-2">
+    <h1>{{ $categoryName }}</h1>
     <ul>
         @foreach($notes as $noteItem)
             <li wire:key="{{ $noteItem->id }}"

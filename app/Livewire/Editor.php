@@ -16,11 +16,16 @@ class Editor extends Component
         'body' => 'required_without:title',
     ];
 
-    protected $listeners = ['editNote' => 'loadNote', 'clearEditor' => 'newNote'];
+    protected $listeners = [
+        'editNote' => 'loadNote',
+        'clearEditor' => 'newNote'
+    ];
 
     public function mount()
     {
-        $this->note = new Note();
+        if(request()->has('note')) {
+            $this->loadNote(request()->get('note'));
+        }
     }
 
     public function loadNote($id)
