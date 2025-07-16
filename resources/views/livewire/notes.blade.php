@@ -1,5 +1,5 @@
 <div x-data="{ showTrash: @entangle('showTrash') }"
-     class="px-5 py-5 bg-pink-300/50 basis-4/12 rounded space-y-2 flex flex-col">
+     class="px-5 py-5 bg-pink-300/50 basis-4/13 rounded space-y-2 flex flex-col overflow-hidden">
     <div class="flex justify-between items-center">
         <h1>{{ $categoryName }}</h1>
         <button wire:click="$dispatch('clearEditor')">+</button>
@@ -10,19 +10,19 @@
                 type="text"
                 wire:model.live.debounce.300ms="search"
                 placeholder="Search note"
-                class="w-full px-3 py-1 rounded-md border border-pink-400/50 bg-pink-300/30 focus:outline-none focus:ring-1 focus:ring-pink-800/80 text-gray-800 placeholder-gray-200"
+                class="w-full px-3 py-1 rounded-md border border-pink-400/50 bg-pink-300/30 focus:outline-none focus:ring-1 focus:ring-pink-800/80 text-gray-800 dark:placeholder-gray-200 placeholder-gray-500"
         >
     </div>
     <ul class="flex-grow overflow-y-auto">
         @forelse($notes as $noteItem)
             <li wire:key="{{ $noteItem->id }}"
-                class="py-1 px-1 bg-pink-500/50 border border-pink-500/50 hover:bg-pink-600/50 cursor-pointer rounded mb-2 flex justify-between items-center
-                {{ $noteItem->id == $selectedNoteId ? 'bg-pink-700/50' : '' }}">
+                class="py-1 px-1 bg-pink-500/50 border border-pink-500/50 hover:bg-pink-700/80 cursor-pointer rounded mb-2 flex justify-between items-center transition duration-300
+                {{ $noteItem->id == $selectedNoteId ? 'bg-pink-800/80' : '' }}">
                 <span wire:click="selectNote({{ $noteItem->id }})"
                       class="w-full">
                     {{ Str::limit($noteItem->title ?: 'Başlıksız Not', 25) }}
                 </span>
-                <button wire:click.stop="deleteNote({{ $noteItem->id }})" class="text-white hover:text-red-700">
+                <button wire:click.stop="deleteNote({{ $noteItem->id }})" class="text-white hover:text-red-800 transition duration-300">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                          stroke="currentColor" class="size-5">
                         <path stroke-linecap="round" stroke-linejoin="round"
@@ -41,7 +41,7 @@
              @click.away="showTrash = false"
              x-transition class="bg-pink-800/50 border border-pink-500 rounded px-2 py-2 mb-2">
 
-            <h2>Silinen Notlar</h2>
+            <h2 class="text-gray-200 font-semibold">Silinen Notlar</h2>
             <ul>
                 @forelse($trashedNotes as $trashedNote)
                     <li wire:key="trashed-{{ $trashedNote->id }}"
@@ -68,12 +68,12 @@
                         </div>
                     </li>
                 @empty
-                    <li class=" text-gray-500">No notes to show</li>
+                    <li class="text-gray-500">No notes to show</li>
                 @endforelse
             </ul>
         </div>
         <button @click="showTrash = !showTrash"
-                class="inline-flex items-center px-4 py-2 bg-rose-700 hover:bg-rose-600 rounded w-full h-[35px] ">
+                class="inline-flex items-center px-4 py-2 dark:bg-rose-700 dark:hover:bg-rose-600 bg-rose-600 hover:bg-rose-500 rounded w-full h-[35px] text-white transition duration-300">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                  stroke="currentColor" class="size-5 mr-2">
                 <path stroke-linecap="round" stroke-linejoin="round"

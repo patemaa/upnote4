@@ -1,5 +1,5 @@
 <div x-data="{ showTrash: @entangle('showTrash') }"
-     class="px-5 py-5 bg-sky-300/50 basis-4/12 rounded space-y-2 flex flex-col">
+     class="px-5 py-5 bg-sky-300/50 basis-4/13 rounded space-y-2 flex flex-col overflow-hidden">
     <div class="flex justify-between items-center">
         <h1>Kategoriler</h1>
         <button wire:click="toggleCreateForm">+</button>
@@ -10,7 +10,7 @@
                 type="text"
                 wire:model.live.debounce.300ms="search"
                 placeholder="Search category"
-                class="w-full px-3 py-1 rounded-md border border-sky-400/50 bg-sky-300/30 focus:outline-none focus:ring-1 focus:ring-sky-800/80 text-gray-800 placeholder-gray-200"
+                class="w-full px-3 py-1 rounded-md border border-sky-400/50 bg-sky-300/30 focus:outline-none focus:ring-1 focus:ring-sky-800/80 text-gray-800 dark:placeholder-gray-200 placeholder-gray-500"
         >
     </div>
     @if($showCreateForm)
@@ -24,10 +24,10 @@
     <ul class="flex-grow overflow-y-auto">
         @forelse($categories as $category)
             <li wire:key="{{ $category->id }}"
-                class="py-1 px-1 bg-sky-400/50 border border-sky-400/50 hover:bg-sky-500/50 cursor-pointer rounded mb-2 flex justify-between items-center
-                @if($selectedCategoryId === $category->id) bg-sky-600 hover:bg-sky-700 @endif">
+                class="py-1 px-1 bg-sky-400/50 border border-sky-400/50 hover:bg-sky-500/80 cursor-pointer rounded mb-2 flex justify-between items-center transition duration-300
+                @if($selectedCategoryId === $category->id) bg-sky-600/80 hover:bg-sky-700 @endif">
                 <span wire:click="selectCategory({{ $category->id }})" class="w-full">{{ $category->name }}</span>
-                <button wire:click.stop="deleteCategory({{ $category->id }})" class="text-white hover:text-red-500">
+                <button wire:click.stop="deleteCategory({{ $category->id }})" class="text-white hover:text-red-500  transition duration-300">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                          stroke="currentColor" class="size-5">
                         <path stroke-linecap="round" stroke-linejoin="round"
@@ -45,7 +45,7 @@
              @click.away="showTrash = false"
              x-transition class="bg-sky-800/50 border border-sky-500 rounded px-2 py-2 mb-2">
 
-            <h2>Silinen Kategoriler</h2>
+            <h2 class="text-gray-200 font-semibold">Silinen Kategoriler</h2>
             <ul>
                 @forelse($trashedCategories as $trashedCategory)
                     <li wire:key="trashed-{{ $trashedCategory->id }}"
@@ -78,7 +78,7 @@
             </ul>
         </div>
         <button @click="showTrash = !showTrash"
-                class="inline-flex items-center px-4 py-2 bg-rose-700 hover:bg-rose-600 rounded w-full h-[35px]">
+                class="inline-flex items-center px-4 py-2 dark:bg-rose-700 dark:hover:bg-rose-600 bg-rose-600 hover:bg-rose-500 rounded w-full h-[35px] text-white transition duration-300">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                  stroke="currentColor" class="size-5 mr-2">
                 <path stroke-linecap="round" stroke-linejoin="round"
