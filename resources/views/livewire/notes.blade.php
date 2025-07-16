@@ -20,7 +20,7 @@
                 {{ $noteItem->id == $selectedNoteId ? 'bg-pink-800/80' : '' }}">
                 <span wire:click="selectNote({{ $noteItem->id }})"
                       class="w-full">
-                    {{ Str::limit($noteItem->title ?: 'Başlıksız Not', 25) }}
+                    {{ Str::limit($noteItem->title ?: 'Başlıksız Not', 15) }}
                 </span>
                 <button wire:click.stop="deleteNote({{ $noteItem->id }})" class="text-white hover:text-red-800 transition duration-300">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"

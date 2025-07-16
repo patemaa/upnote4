@@ -5,6 +5,14 @@
         <button wire:click="toggleCreateForm">+</button>
     </div>
 
+    @if($showCreateForm)
+        <form wire:submit.prevent="createCategory" class="flex space-x-1">
+            <input type="text" wire:model.defer="newCategoryName" placeholder="Yeni Kategori"
+                   class="border rounded px-2 py-1 w-full text-gray-900">
+            <button type="submit" class="bg-sky-500/80 hover:bg-sky-500/50 text-white px-3 rounded">+</button>
+        </form>
+    @endif
+
     <div class="relative">
         <input
                 type="text"
@@ -13,13 +21,6 @@
                 class="w-full px-3 py-1 rounded-md border border-sky-400/50 bg-sky-300/30 focus:outline-none focus:ring-1 focus:ring-sky-800/80 text-gray-800 dark:placeholder-gray-200 placeholder-gray-500"
         >
     </div>
-    @if($showCreateForm)
-        <form wire:submit.prevent="createCategory" class="flex space-x-1">
-            <input type="text" wire:model.defer="newCategoryName" placeholder="Yeni Kategori"
-                   class="border rounded px-2 py-1 w-full text-gray-900">
-            <button type="submit" class="bg-sky-500/80 hover:bg-sky-500/50 text-white px-3 rounded">+</button>
-        </form>
-    @endif
 
     <ul class="flex-grow overflow-y-auto">
         @forelse($categories as $category)
