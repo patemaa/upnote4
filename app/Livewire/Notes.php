@@ -10,14 +10,16 @@ use Livewire\Attributes\Url;
 class Notes extends Component
 {
     public $showTrash = false;
+    public $showArchive = false;
     public $trashedNotes = [];
+    public $archivedNotes = [];
 
     #[Url(as: 'note')]
     public ?int $selectedNoteId = null;
 
     #[Url(as: 'category')]
     public ?int $selectedCategoryIdForNotes = null;
-    public $categoryName = 'Tüm Notlar';
+    public $categoryName = 'All Notes';
 
     #[Url(as: 's')]
     public string $search = '';
@@ -28,6 +30,7 @@ class Notes extends Component
         'noteSelected' => 'setSelectedNote',
         'clearEditor' => 'clearSelection',
         'categorySelected' => 'filterNotesByCategory',
+        'firstNoteSelectedInCategory' => 'handleFirstNoteSelectedInCategory',
     ];
 
     public function mount()
@@ -36,7 +39,7 @@ class Notes extends Component
             $category = Category::find($this->selectedCategoryIdForNotes);
             $this->categoryName = $category ? $category->name : 'Kategori Bulunamadı';
         } else {
-            $this->categoryName = 'Tüm Notlar';
+            $this->categoryName = 'All Notes';
         }
     }
 
@@ -48,6 +51,12 @@ class Notes extends Component
     public function setSelectedNote($id)
     {
         $this->selectedNoteId = $id;
+    }
+
+    public function handleFirstNoteSelectedInCategory($noteId)
+    {
+        $this->selectedNoteId = $noteId;
+        $this->dispatch('editNote', id: $noteId);
     }
 
     public function clearSelection()
@@ -74,7 +83,7 @@ class Notes extends Component
         $this->reset('search');
 
         if ($categoryId === null) {
-            $this->categoryName = 'Tüm Notlar';
+            $this->categoryName = 'All Notes';
         } else {
             $category = Category::find($categoryId);
             $this->categoryName = $category ? $category->name : 'Kategori Bulunamadı';
@@ -93,6 +102,21 @@ class Notes extends Component
     public function toggleTrash()
     {
         $this->showTrash = !$this->showTrash;
+        $this->showArchive = false;
+    }
+
+    public function archiveNote(int $noteId)
+    {
+        if ($noteId === $this->selectedNoteId) {
+            $this->selectedNoteId = null;
+            $this->dispatch('clearEditor');
+        }
+        Note::findOrFail($noteId)->update(['is_archived' => true, 'archived_at' => now()]);
+    }
+
+    public function unarchiveNote(int $noteId)
+    {
+        Note::findOrFail($noteId)->update(['is_archived' => false, 'archived_at' => null]);
     }
 
     public function permanentDeleteNote(int $noteId)
@@ -100,14 +124,27 @@ class Notes extends Component
         Note::onlyTrashed()->findOrFail($noteId)->forceDelete();
     }
 
+    public function permanentDeleteFromArchive(int $noteId)
+    {
+        Note::findOrFail($noteId)->forceDelete();
+    }
+
     public function restoreNote(int $noteId)
     {
         Note::onlyTrashed()->findOrFail($noteId)->restore();
     }
 
+    public function toggleArchive()
+    {
+        $this->showArchive = !$this->showArchive;
+        $this->showTrash = false;
+    }
+
     public function render()
     {
         $notes = Note::latest()
+            ->whereNull('deleted_at')
+            ->where('is_archived', false)
             ->when($this->selectedCategoryIdForNotes, function ($query) {
                 return $query->where('category_id', $this->selectedCategoryIdForNotes);
             })
@@ -117,12 +154,23 @@ class Notes extends Component
                         ->orWhere('body', 'like', '%' . $this->search . '%');
                 });
             })
-            ->when(!$this->showTrash, function ($query) {
-                return $query->whereNull('deleted_at');
-            })
             ->get();
 
         $this->trashedNotes = Note::onlyTrashed()->latest()->get();
+
+        $this->archivedNotes = Note::latest()
+            ->where('is_archived', true)
+            ->whereNull('deleted_at')
+            ->when($this->selectedCategoryIdForNotes, function ($query) {
+                return $query->where('category_id', $this->selectedCategoryIdForNotes);
+            })
+            ->when($this->search, function ($query) {
+                return $query->where(function ($q) {
+                    $q->where('title', 'like', '%' . $this->search . '%')
+                        ->orWhere('body', 'like', '%' . $this->search . '%');
+                });
+            })
+            ->get();
 
         return view('livewire.notes', [
             'notes' => $notes,

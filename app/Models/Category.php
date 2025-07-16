@@ -10,7 +10,14 @@ class Category extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = ['name'];
+    protected $fillable = [
+        'name',
+        'is_archived',
+    ];
+
+    protected $casts = [
+        'is_archived' => 'boolean',
+    ];
 
     public function notes()
     {

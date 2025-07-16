@@ -10,7 +10,17 @@ class Note extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = ['category_id', 'title', 'body'];
+    protected $fillable = [
+        'category_id',
+        'title',
+        'body',
+        'is_archived',
+    ];
+
+    protected $casts = [
+        'archived_at' => 'datetime',
+        'is_archived' => 'boolean',
+    ];
 
     public function category()
     {

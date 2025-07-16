@@ -47,10 +47,10 @@
             x-ref="body"
             wire:model.live="body"
             placeholder="Enter Something..."
-            class="bg-transparent w-full px-4 py-2 min-h-[400px] focus:outline-none focus:ring-0 dark:placeholder-gray-300 placeholder-gray-800"
+            class="bg-transparent w-full px-4 py-2 min-h-[506px] focus:outline-none focus:ring-0 dark:placeholder-gray-300 placeholder-gray-800"
     ></textarea>
 
     <div class="px-2 dark:text-white/70 text-gray-900">
-        <p>Kelime Sayısı : {{ str_word_count($body) }}</p>
+        <p>Word Count: {{ str_word_count($body) }}</p>
     </div>
 </div>
