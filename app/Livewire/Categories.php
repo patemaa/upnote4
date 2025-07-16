@@ -12,8 +12,8 @@ class Categories extends Component
     public $showCreateForm = false;
     public $newCategoryName = '';
     public $showTrash = false;
-    public $showArchive = false; // Arşiv kutusunun görünürlüğünü kontrol eder
-    public $archivedCategories = []; // Arşivlenmiş kategorileri tutar
+    public $showArchive = false;
+    public $archivedCategories = [];
 
     #[Url(as: 'category')]
     public ?int $selectedCategoryId = null;
@@ -33,19 +33,17 @@ class Categories extends Component
         if ($this->selectedCategoryId === $categoryId) {
             $this->selectedCategoryId = null;
             $this->dispatch('categorySelected', categoryId: null);
-            $this->dispatch('clearEditor'); // Eğer bir kategori seçimi kaldırıldıysa editörü temizleyelim (isteğe bağlı)
+            $this->dispatch('clearEditor');
         } else {
             $this->selectedCategoryId = $categoryId;
             $this->dispatch('categorySelected', categoryId: $categoryId);
 
-            // Seçilen kategoriye ait ilk notu bul
             $firstNote = Note::where('category_id', $categoryId)->latest()->first();
 
-            // Eğer ilk not varsa, yeni bir event ile Notes bileşenine gönder
             if ($firstNote) {
-                $this->dispatch('firstNoteSelectedInCategory', noteId: $firstNote->id); // Event adını değiştirdik
+                $this->dispatch('firstNoteSelectedInCategory', noteId: $firstNote->id);
             } else {
-                $this->dispatch('clearEditor'); // Eğer kategoride not yoksa editörü temizleyelim (isteğe bağlı)
+                $this->dispatch('clearEditor');
             }
         }
     }
@@ -91,7 +89,7 @@ class Categories extends Component
 
         $category->notes()->update([
             'is_archived' => true,
-         ]);
+        ]);
     }
 
     public function unarchiveCategory(int $categoryId)
