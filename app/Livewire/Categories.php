@@ -8,30 +8,21 @@ use Livewire\Attributes\Url;
 
 class Categories extends Component
 {
-    public $categories = [];
     public $showCreateForm = false;
     public $newCategoryName = '';
     public $showTrash = false;
-    public $trashedCategories = [];
 
     #[Url(as: 'category')]
     public ?int $selectedCategoryId = null;
 
+    #[Url(as: 'cs')]
+    public string $search = '';
+
     public function mount()
     {
-        $this->loadCategories();
         if ($this->selectedCategoryId) {
             $this->dispatch('categorySelected', categoryId: $this->selectedCategoryId);
         }
-    }
-
-    public function loadCategories()
-    {
-        $this->categories = Category::query()->latest()->when(!$this->showTrash, function ($query) {
-            return $query->whereNull('deleted_at');
-        })->get();
-
-        $this->trashedCategories = Category::onlyTrashed()->latest()->get();
     }
 
     public function selectCategory(int $categoryId)
@@ -53,7 +44,7 @@ class Categories extends Component
     public function createCategory()
     {
         $this->validate([
-            'newCategoryName' => 'required|string|max:255',
+            'newCategoryName' => 'required|string|max:255|unique:categories,name',
         ]);
 
         Category::create([
@@ -62,7 +53,6 @@ class Categories extends Component
 
         $this->newCategoryName = '';
         $this->showCreateForm = false;
-        $this->loadCategories();
     }
 
     public function deleteCategory(int $categoryId)
@@ -72,29 +62,42 @@ class Categories extends Component
             $this->dispatch('categorySelected', categoryId: null);
         }
         Category::find($categoryId)->delete();
-        $this->loadCategories();
     }
 
     public function toggleTrash()
     {
         $this->showTrash = !$this->showTrash;
-        $this->loadCategories();
     }
 
     public function permanentDeleteCategory(int $categoryId)
     {
         Category::onlyTrashed()->findOrFail($categoryId)->forceDelete();
-        $this->loadCategories();
     }
 
     public function restoreCategory(int $categoryId)
     {
         Category::onlyTrashed()->findOrFail($categoryId)->restore();
-        $this->loadCategories();
     }
 
     public function render()
     {
-        return view('livewire.categories');
+        $categories = Category::query()
+            ->when($this->search, function ($query) {
+                $query->where('name', 'like', '%' . $this->search . '%');
+            })
+            ->latest()
+            ->get();
+
+        $trashedCategories = Category::onlyTrashed()
+            ->when($this->search, function ($query) {
+                $query->where('name', 'like', '%' . $this->search . '%');
+            })
+            ->latest()
+            ->get();
+
+        return view('livewire.categories', [
+            'categories' => $categories,
+            'trashedCategories' => $trashedCategories,
+        ]);
     }
 }

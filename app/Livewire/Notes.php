@@ -9,14 +9,18 @@ use Livewire\Attributes\Url;
 
 class Notes extends Component
 {
-    public $notes;
     public $showTrash = false;
     public $trashedNotes = [];
 
     #[Url(as: 'note')]
     public ?int $selectedNoteId = null;
+
+    #[Url(as: 'category')]
     public ?int $selectedCategoryIdForNotes = null;
     public $categoryName = 'Tüm Notlar';
+
+    #[Url(as: 's')]
+    public string $search = '';
 
     protected $listeners = [
         'noteCreated' => 'refreshAndSelectNote',
@@ -28,31 +32,16 @@ class Notes extends Component
 
     public function mount()
     {
-        if (request()->get('category')) {
-            $this->filterNotesByCategory(request()->get('category'));
+        if ($this->selectedCategoryIdForNotes) {
+            $category = Category::find($this->selectedCategoryIdForNotes);
+            $this->categoryName = $category ? $category->name : 'Kategori Bulunamadı';
         } else {
-            $this->loadNotes();
+            $this->categoryName = 'Tüm Notlar';
         }
-    }
-
-    public function loadNotes(int $categoryId = null)
-    {
-        $this->notes = Note::latest()
-            ->when($categoryId, function ($query) use ($categoryId) {
-                return $query->where('category_id', $categoryId);
-            })
-            ->when(!$this->showTrash, function ($query) {
-                return $query->whereNull('deleted_at');
-            })
-            ->get();
-
-        $this->trashedNotes = Note::onlyTrashed()->latest()->get();
-        $this->selectedCategoryIdForNotes = $categoryId;
     }
 
     public function refreshAndSelectNote($id = null)
     {
-        $this->loadNotes($this->selectedCategoryIdForNotes);
         $this->setSelectedNote($id);
     }
 
@@ -79,11 +68,14 @@ class Notes extends Component
 
     public function filterNotesByCategory(?int $categoryId)
     {
+        $this->selectedCategoryIdForNotes = $categoryId;
+        $this->selectedNoteId = null;
+        $this->dispatch('clearEditor');
+        $this->reset('search');
+
         if ($categoryId === null) {
-            $this->loadNotes();
             $this->categoryName = 'Tüm Notlar';
         } else {
-            $this->loadNotes($categoryId);
             $category = Category::find($categoryId);
             $this->categoryName = $category ? $category->name : 'Kategori Bulunamadı';
         }
@@ -96,29 +88,44 @@ class Notes extends Component
             $this->dispatch('clearEditor');
         }
         Note::find($noteId)->delete();
-        $this->loadNotes($this->selectedCategoryIdForNotes);
     }
 
     public function toggleTrash()
     {
         $this->showTrash = !$this->showTrash;
-        $this->loadNotes($this->selectedCategoryIdForNotes);
     }
 
     public function permanentDeleteNote(int $noteId)
     {
         Note::onlyTrashed()->findOrFail($noteId)->forceDelete();
-        $this->loadNotes($this->selectedCategoryIdForNotes);
     }
 
     public function restoreNote(int $noteId)
     {
         Note::onlyTrashed()->findOrFail($noteId)->restore();
-        $this->loadNotes();
     }
 
     public function render()
     {
-        return view('livewire.notes');
+        $notes = Note::latest()
+            ->when($this->selectedCategoryIdForNotes, function ($query) {
+                return $query->where('category_id', $this->selectedCategoryIdForNotes);
+            })
+            ->when($this->search, function ($query) {
+                return $query->where(function ($q) {
+                    $q->where('title', 'like', '%' . $this->search . '%')
+                        ->orWhere('body', 'like', '%' . $this->search . '%');
+                });
+            })
+            ->when(!$this->showTrash, function ($query) {
+                return $query->whereNull('deleted_at');
+            })
+            ->get();
+
+        $this->trashedNotes = Note::onlyTrashed()->latest()->get();
+
+        return view('livewire.notes', [
+            'notes' => $notes,
+        ]);
     }
 }

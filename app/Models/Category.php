@@ -15,4 +15,26 @@ class Category extends Model
     public function notes()
     {
         return $this->hasMany(Note::class);
-    }}
+    }
+
+    protected static function booted(): void
+    {
+        static::deleting(function (Category $category) {
+            foreach ($category->notes as $note) {
+                $note->delete();
+            }
+        });
+
+        static::forceDeleting(function (Category $category) {
+            $category->notes()->withTrashed()->get()->each(function ($note) {
+                $note->forceDelete();
+            });
+        });
+
+        static::restoring(function (Category $category) {
+            $category->notes()->withTrashed()->get()->each(function ($note) {
+                $note->restore();
+            });
+        });
+    }
+}
