@@ -2,7 +2,7 @@
     <input type="text" wire:model.live.debounce.500ms="search" placeholder="Search..."
            class="w-[905px] p-2 border rounded mb-4 overflow-hidden">
 
-    @if (!empty($searchResults))
+    @if (strlen(trim($search)) >= 1)
         <div class="absolute z-10 w-[905px] bg-white border border-gray-300 rounded shadow-md overflow-hidden pr-10">
             <ul>
                 @forelse ($searchResults as $result)
@@ -15,7 +15,7 @@
                         @endif
                     </li>
                 @empty
-                    <li class="px-4 py-2">Sonuç bulunamadı.</li>
+                    <li class="px-4 py-2 text-gray-500">Sonuç bulunamadı.</li>
                 @endforelse
             </ul>
         </div>

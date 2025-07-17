@@ -21,8 +21,8 @@ class Categories extends Component
     public string $search = '';
 
     protected $listeners = [
-        'categorySelected' => 'handleCategorySelected', // Rename the original listener
-        'categorySelectedFromSearch' => 'selectCategoryAndFirstNote', // New listener for selection from search
+        'categorySelected' => 'handleCategorySelected',
+        'categorySelectedFromSearch' => 'selectCategoryAndFirstNote',
     ];
 
     public function mount()
@@ -32,7 +32,7 @@ class Categories extends Component
         }
     }
 
-    public function handleCategorySelected(int $categoryId)
+    public function handleCategorySelected(?int $categoryId)
     {
         $this->selectedCategoryId = $categoryId;
     }
@@ -40,7 +40,7 @@ class Categories extends Component
     public function selectCategoryAndFirstNote(int $categoryId)
     {
         $this->selectedCategoryId = $categoryId;
-        $this->dispatch('categorySelected', categoryId: $categoryId); // Keep this for potential UI updates in Categories
+        $this->dispatch('categorySelected', categoryId: $categoryId);
 
         $firstNote = Note::where('category_id', $categoryId)->latest()->first();
 

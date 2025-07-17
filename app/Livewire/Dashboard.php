@@ -36,9 +36,9 @@ class Dashboard extends Component
     public function selectSearchResult(int $id, string $type)
     {
         if ($type === 'category') {
-            $this->dispatch('categorySelectedFromSearch', categoryId: $id); // Dispatch a specific event for category selection from search
+            $this->dispatch('categorySelectedFromSearch', categoryId: $id);
         } elseif ($type === 'note') {
-            $this->dispatch('noteSelected', noteId: $id);
+            $this->dispatch('noteSelected', $id);
         }
         $this->searchResults = [];
         $this->search = '';

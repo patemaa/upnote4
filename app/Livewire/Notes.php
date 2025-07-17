@@ -84,11 +84,6 @@ class Notes extends Component
         }
     }
 
-    public function filterNotesBySearch(string $search)
-    {
-        $this->search = $search;
-    }
-
     public function deleteNote(int $noteId)
     {
         if ($noteId === $this->selectedNoteId) {
