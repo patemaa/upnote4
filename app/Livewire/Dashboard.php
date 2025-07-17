@@ -38,7 +38,11 @@ class Dashboard extends Component
         if ($type === 'category') {
             $this->dispatch('categorySelectedFromSearch', categoryId: $id);
         } elseif ($type === 'note') {
-            $this->dispatch('noteSelected', $id);
+            $note = Note::find($id);
+            if ($note) {
+                // ÖNCEKİ İKİ OLAY YERİNE, TÜM BİLGİYİ İÇEREN BU TEK OLAYI GÖNDERİN
+                $this->dispatch('noteSelectedFromSearch', noteId: $note->id, categoryId: $note->category_id);
+            }
         }
         $this->searchResults = [];
         $this->search = '';

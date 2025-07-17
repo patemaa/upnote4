@@ -25,6 +25,7 @@ class Notes extends Component
         'categorySelected' => 'filterNotesByCategory',
         'firstNoteSelectedInCategory' => 'handleFirstNoteSelectedInCategory',
         'searchUpdated' => 'filterNotesBySearch',
+        'noteSelectedFromSearch' => 'handleNoteSelectionFromSearch', // 1. YENİ LISTENER'I EKLEYİN
     ];
 
     public function mount()
@@ -35,6 +36,23 @@ class Notes extends Component
         } else {
             $this->categoryName = 'All Notes';
         }
+    }
+
+    public function handleNoteSelectionFromSearch(int $noteId, int $categoryId)
+    {
+        // Kategori bilgisini güncelle
+        $this->selectedCategoryIdForNotes = $categoryId;
+        $category = Category::find($categoryId);
+        $this->categoryName = $category ? $category->name : 'Kategori Bulunamadı';
+
+        // Not seçimini güncelle
+        $this->selectedNoteId = $noteId;
+
+        // Arama kutusunu temizle
+        $this->reset('search');
+
+        // ÖNEMLİ: 'clearEditor' GÖNDERMEK YERİNE, DOĞRUDAN EDITOR'E NOTU YÜKLEMESİNİ SÖYLEYİN
+        $this->dispatch('editNote', id: $noteId);
     }
 
     public function refreshAndSelectNote($id = null)

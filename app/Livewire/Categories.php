@@ -23,6 +23,7 @@ class Categories extends Component
     protected $listeners = [
         'categorySelected' => 'handleCategorySelected',
         'categorySelectedFromSearch' => 'selectCategoryAndFirstNote',
+        'noteSelectedFromSearch' => 'handleCategorySelected', // YENİ OLAYI BURAYA EKLEYİN
     ];
 
     public function mount()

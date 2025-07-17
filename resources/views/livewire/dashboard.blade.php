@@ -1,5 +1,5 @@
 <div class="p-4">
-    <input type="text" wire:model.live.debounce.500ms="search" placeholder="Search..."
+    <input type="text" wire:model.live="search" placeholder="Search..."
            class="w-[905px] p-2 border rounded mb-4 overflow-hidden">
 
     @if (strlen(trim($search)) >= 1)
@@ -21,7 +21,7 @@
         </div>
     @endif
 
-    <div class="text-gray-900 dark:text-gray-100 flex min-h-[650px] space-x-2">
+    <div class="text-gray-900 dark:text-gray-100 flex min-h-[500px] space-x-2">
         <livewire:categories :search="$search"/>
         <livewire:notes />
         <livewire:editor/>
