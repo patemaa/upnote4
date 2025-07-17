@@ -1,5 +1,5 @@
 <div x-data="{ showDropdown: @entangle('showCategoryDropdown').defer }"
-     class="relative rounded overflow-hidden basis-5/13 bg-purple-300/50 px-1 py-1">
+     class="relative rounded overflow-hidden basis-5/12 bg-purple-300/50 px-1 py-1">
 
     <div class="flex justify-between items-center">
         <input

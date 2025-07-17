@@ -16,31 +16,44 @@ class Categories extends Component
     public $archivedCategories = [];
 
     #[Url(as: 'category')]
-    public ?int $selectedCategoryId = null;
+    public ?string $selectedCategoryId = null; // int değil, string olarak bırak
+
+    public ?int $selectedCategoryIdInt = null; // int tipinde yardımcı property    public string $search = '';
 
     public string $search = '';
 
     protected $listeners = [
         'categorySelected' => 'handleCategorySelected',
         'categorySelectedFromSearch' => 'selectCategoryAndFirstNote',
-        'noteSelectedFromSearch' => 'handleCategorySelected', // YENİ OLAYI BURAYA EKLEYİN
+        'noteSelectedFromSearch' => 'handleCategorySelected',
     ];
 
-    public function mount()
+
+
+    public function mount($search = '')
     {
-        if ($this->selectedCategoryId) {
-            $this->dispatch('categorySelected', categoryId: $this->selectedCategoryId);
+        $this->search = $search;
+
+        if ($this->selectedCategoryId !== null) {
+            $this->selectedCategoryIdInt = is_numeric($this->selectedCategoryId) ? (int) $this->selectedCategoryId : null;
+        } else {
+            $this->selectedCategoryIdInt = null;
+        }
+
+        if ($this->selectedCategoryIdInt) {
+            $this->dispatch('categorySelected', categoryId: $this->selectedCategoryIdInt);
         }
     }
 
+
     public function handleCategorySelected(?int $categoryId)
     {
-        $this->selectedCategoryId = $categoryId;
+        $this->selectedCategoryIdInt = $categoryId;
     }
 
     public function selectCategoryAndFirstNote(int $categoryId)
     {
-        $this->selectedCategoryId = $categoryId;
+        $this->selectedCategoryIdInt = $categoryId;
         $this->dispatch('categorySelected', categoryId: $categoryId);
 
         $firstNote = Note::where('category_id', $categoryId)->latest()->first();
@@ -54,12 +67,12 @@ class Categories extends Component
 
     public function selectCategory(int $categoryId)
     {
-        if ($this->selectedCategoryId === $categoryId) {
-            $this->selectedCategoryId = null;
+        if ($this->selectedCategoryIdInt === $categoryId) {
+            $this->selectedCategoryIdInt = null;
             $this->dispatch('categorySelected', categoryId: null);
             $this->dispatch('clearEditor');
         } else {
-            $this->selectedCategoryId = $categoryId;
+            $this->selectedCategoryIdInt = $categoryId;
             $this->dispatch('categorySelected', categoryId: $categoryId);
 
             $firstNote = Note::where('category_id', $categoryId)->latest()->first();
@@ -93,8 +106,8 @@ class Categories extends Component
 
     public function deleteCategory(int $categoryId)
     {
-        if ($categoryId === $this->selectedCategoryId) {
-            $this->selectedCategoryId = null;
+        if ($categoryId === $this->selectedCategoryIdInt) {
+            $this->selectedCategoryIdInt = null;
             $this->dispatch('categorySelected', categoryId: null);
         }
         Category::find($categoryId)->delete();

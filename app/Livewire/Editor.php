@@ -75,7 +75,7 @@ class Editor extends Component
         if (!$this->note->exists) {
             $this->note->title = $this->title ?: 'Başlıksız Not';
             $this->note->body = $this->body;
-            $this->note->category_id = 1;
+            $this->note->category_id = null;
             $this->note->save();
 
             $this->dispatch('noteCreated', id: $this->note->id);
