@@ -1,8 +1,20 @@
-<div class="px-5 py-5 bg-pink-300/50 basis-4/12 rounded space-y-2 flex flex-col overflow-hidden">
+<div x-data="{ showForm: false }"
+     x-init="window.addEventListener('noteCreated', () => { showForm = false })"
+     class="px-5 py-5 bg-pink-300/50 basis-4/12 rounded space-y-2 flex flex-col overflow-hidden">
     <div class="flex justify-between items-center">
         <h1>{{ $categoryName }}</h1>
-        <button wire:click="$dispatch('clearEditor', alert('New note created.'))" class="hover:text-gray-400 transition duration-300">+</button>
+        <button @click="showForm = !showForm; if(showForm) { $nextTick(() => $refs.titleInput.focus()) }"
+                class="hover:text-gray-400 transition duration-300">+
+        </button>
     </div>
+
+    <form x-show="showForm" @submit.prevent="$wire.createNote()" class="flex space-x-1 mt-2" x-cloak>
+        <input x-ref="titleInput" type="text" wire:model.defer="newNoteTitle" placeholder="Title"
+               class="border rounded px-2 py-1 w-full text-gray-900">
+        <button type="submit"
+                class="bg-pink-500/80 hover:bg-pink-700/80 text-white px-3 rounded transition duration-300">+
+        </button>
+    </form>
 
     <ul class="flex-grow overflow-y-auto">
         @forelse($notes as $noteItem)

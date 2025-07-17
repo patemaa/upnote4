@@ -22,7 +22,8 @@ class Editor extends Component
 
     protected $listeners = [
         'editNote' => 'loadNote',
-        'clearEditor' => 'newNote'
+        'clearEditor' => 'newNote',
+        'categoryCreated' => 'reloadCategories',
     ];
 
     public function mount()
@@ -34,7 +35,12 @@ class Editor extends Component
         $this->categories = Category::all();
     }
 
-    public function loadNote($id)
+    public function reloadCategories()
+    {
+        $this->categories = Category::latest()->get();
+    }
+
+    public function loadNote($id = null)
     {
         if ($id === null || ($this->note && $this->note->id == $id)) {
             $this->newNote();

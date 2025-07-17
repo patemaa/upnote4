@@ -16,6 +16,10 @@ class Notes extends Component
     public ?int $selectedCategoryIdForNotes = null;
     public $categoryName = 'All Notes';
     public string $search = '';
+    public $showCreateForm = false;
+    public $newNoteTitle = '';
+    public $newNoteBody = '';
+
 
     protected $listeners = [
         'noteCreated' => 'refreshAndSelectNote',
@@ -25,7 +29,7 @@ class Notes extends Component
         'categorySelected' => 'filterNotesByCategory',
         'firstNoteSelectedInCategory' => 'handleFirstNoteSelectedInCategory',
         'searchUpdated' => 'filterNotesBySearch',
-        'noteSelectedFromSearch' => 'handleNoteSelectionFromSearch', // 1. YENİ LISTENER'I EKLEYİN
+        'noteSelectedFromSearch' => 'handleNoteSelectionFromSearch',
     ];
 
     public function mount()
@@ -40,19 +44,40 @@ class Notes extends Component
 
     public function handleNoteSelectionFromSearch(int $noteId, int $categoryId)
     {
-        // Kategori bilgisini güncelle
         $this->selectedCategoryIdForNotes = $categoryId;
         $category = Category::find($categoryId);
         $this->categoryName = $category ? $category->name : 'Kategori Bulunamadı';
 
-        // Not seçimini güncelle
         $this->selectedNoteId = $noteId;
 
-        // Arama kutusunu temizle
         $this->reset('search');
 
-        // ÖNEMLİ: 'clearEditor' GÖNDERMEK YERİNE, DOĞRUDAN EDITOR'E NOTU YÜKLEMESİNİ SÖYLEYİN
         $this->dispatch('editNote', id: $noteId);
+    }
+
+    public function toggleCreateForm()
+    {
+        $this->showCreateForm = !$this->showCreateForm;
+    }
+
+    public function createNote()
+    {
+        $this->validate([
+            'newNoteTitle' => 'required|string|max:255|unique:notes,title',
+        ]);
+
+        $note = Note::create([
+            'title' => $this->newNoteTitle,
+            'body' => '',
+            'category_id' => $this->selectedCategoryIdForNotes,
+        ]);
+
+        $this->newNoteTitle = '';
+        $this->newNoteBody = '';
+        $this->showCreateForm = false;
+        $this->selectedNoteId = $note->id;
+        $this->dispatch('editNote', id: $note->id);
+        $this->dispatch('noteCreated');
     }
 
     public function refreshAndSelectNote($id = null)

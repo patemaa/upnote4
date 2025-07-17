@@ -5,6 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Attributes\Scope;
+use Illuminate\Database\Eloquent\Builder;
 
 class Category extends Model
 {
@@ -43,5 +45,11 @@ class Category extends Model
                 $note->restore();
             });
         });
+    }
+
+    #[Scope]
+    protected function search(Builder $query, $value) : void
+    {
+        $query->where('name', 'like', '%' . $value . '%');
     }
 }

@@ -16,9 +16,9 @@ class Categories extends Component
     public $archivedCategories = [];
 
     #[Url(as: 'category')]
-    public ?string $selectedCategoryId = null; // int değil, string olarak bırak
+    public ?string $selectedCategoryId = null;
 
-    public ?int $selectedCategoryIdInt = null; // int tipinde yardımcı property    public string $search = '';
+    public ?int $selectedCategoryIdInt = null;
 
     public string $search = '';
 
@@ -29,13 +29,12 @@ class Categories extends Component
     ];
 
 
-
     public function mount($search = '')
     {
         $this->search = $search;
 
         if ($this->selectedCategoryId !== null) {
-            $this->selectedCategoryIdInt = is_numeric($this->selectedCategoryId) ? (int) $this->selectedCategoryId : null;
+            $this->selectedCategoryIdInt = is_numeric($this->selectedCategoryId) ? (int)$this->selectedCategoryId : null;
         } else {
             $this->selectedCategoryIdInt = null;
         }
@@ -69,10 +68,12 @@ class Categories extends Component
     {
         if ($this->selectedCategoryIdInt === $categoryId) {
             $this->selectedCategoryIdInt = null;
+            $this->selectedCategoryId = null;
             $this->dispatch('categorySelected', categoryId: null);
             $this->dispatch('clearEditor');
         } else {
             $this->selectedCategoryIdInt = $categoryId;
+            $this->selectedCategoryId = $categoryId;
             $this->dispatch('categorySelected', categoryId: $categoryId);
 
             $firstNote = Note::where('category_id', $categoryId)->latest()->first();
@@ -96,12 +97,18 @@ class Categories extends Component
             'newCategoryName' => 'required|string|max:255|unique:categories,name',
         ]);
 
-        Category::create([
+        $category = Category::create([
             'name' => $this->newCategoryName,
         ]);
 
         $this->newCategoryName = '';
         $this->showCreateForm = false;
+
+        $this->selectedCategoryId = $category->id;
+        $this->selectedCategoryIdInt = $category->id;
+
+        $this->dispatch('categorySelected', categoryId: $category->id);
+        $this->dispatch('categoryCreated');
     }
 
     public function deleteCategory(int $categoryId)

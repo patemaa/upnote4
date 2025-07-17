@@ -1,16 +1,19 @@
-<div class="px-5 py-5 bg-sky-300/50 basis-4/12 rounded space-y-2 flex flex-col overflow-hidden">
+<div x-data="{ showForm: false }" x-init="window.addEventListener('categoryCreated', () => { showForm = false })"
+     class="px-5 py-5 bg-sky-300/50 basis-4/12 rounded space-y-2 flex flex-col overflow-hidden">
     <div class="flex justify-between items-center">
         <h1>Categories</h1>
-        <button wire:click="toggleCreateForm" class="hover:text-gray-400 transition duration-300">+</button>
+        <button @click="showForm = !showForm; if(showForm) { $nextTick(() => $refs.nameInput.focus()) }"
+                class="hover:text-gray-400 transition duration-300">+
+        </button>
     </div>
 
-    @if($showCreateForm)
-        <form wire:submit.prevent="createCategory" class="flex space-x-1">
-            <input type="text" wire:model.defer="newCategoryName" placeholder="Yeni Kategori"
-                   class="border rounded px-2 py-1 w-full text-gray-900">
-            <button type="submit" class="bg-sky-500/80 hover:bg-sky-500/50 text-white px-3 rounded">+</button>
-        </form>
-    @endif
+    <form x-show="showForm" @submit.prevent="$wire.createCategory()" class="flex space-x-1 mt-2" x-cloak>
+        <input x-ref="nameInput" type="text" wire:model.defer="newCategoryName" placeholder="Name"
+               class="border rounded px-2 py-1 w-full text-gray-900">
+        <button type="submit"
+                class="bg-sky-500/80 hover:bg-sky-700/80 text-white px-3 rounded transition duration-300">+
+        </button>
+    </form>
 
     <ul class="flex-grow overflow-y-auto">
         @forelse($categories as $category)

@@ -1,7 +1,28 @@
 <div>
-    <div class="p-4 flex justify-between items-center">
-        <input type="text" wire:model.live="search" placeholder="Search..."
-               class="w-[905px] p-2 border rounded overflow-hidden">
+    <div class="px-[100px] p-4 flex justify-between items-center overflow-hidden relative">
+        <div class="relative space-y-2">
+            <input type="text" wire:model.live="search" placeholder="Search..."
+                   class="w-[905px] p-2 border rounded overflow-hidden">
+
+            @if (strlen(trim($search)) >= 1)
+                <div class="absolute z-50 w-[905px] bg-white border border-gray-300 rounded shadow-md overflow-hidden pr-10">
+                    <ul>
+                        @forelse ($searchResults as $result)
+                            <li wire:click="selectSearchResult({{ $result['id'] }}, '{{ $result['type'] }}')"
+                                class="px-4 py-2 cursor-pointer hover:bg-gray-100">
+                                @if ($result['type'] === 'category')
+                                    Kategori: {{ $result['name'] }}
+                                @elseif ($result['type'] === 'note')
+                                    Not: {{ $result['title'] }}
+                                @endif
+                            </li>
+                        @empty
+                            <li class="px-4 py-2 text-gray-500">Sonuç bulunamadı.</li>
+                        @endforelse
+                    </ul>
+                </div>
+            @endif
+        </div>
 
         <div class="flex space-x-2 ml-4">
             <button wire:click="toggleArchive" class="px-4 py-2 transition duration-300 bg-blue-600/50 dark:bg-blue-500/50 text-white rounded hover:bg-blue-600/50">
@@ -29,37 +50,24 @@
         </div>
     </div>
 
-    @if (strlen(trim($search)) >= 1)
-        <div class="absolute z-10 w-[905px] bg-white border border-gray-300 rounded shadow-md overflow-hidden pr-10">
-            <ul>
-                @forelse ($searchResults as $result)
-                    <li wire:click="selectSearchResult({{ $result['id'] }}, '{{ $result['type'] }}')"
-                        class="px-4 py-2 cursor-pointer hover:bg-gray-100">
-                        @if ($result['type'] === 'category')
-                            Kategori: {{ $result['name'] }}
-                        @elseif ($result['type'] === 'note')
-                            Not: {{ $result['title'] }}
-                        @endif
-                    </li>
-                @empty
-                    <li class="px-4 py-2 text-gray-500">Sonuç bulunamadı.</li>
-                @endforelse
-            </ul>
-        </div>
-    @endif
-
     <div>
         @if ($showTrash)
             <div class="p-4 bg-gray-200 rounded shadow">
-                <h2 class="text-2xl font-bold mb-6 text-red-600">Çöp Kutusu</h2>
+               <div class="flex justify-between">
+                   <h2 class="text-2xl font-bold text-red-600">Çöp Kutusu</h2>
+                   <button wire:click="emptyTrash" wire:confirm="Çöp kutusunu boşaltmak istediginizden emin misiniz? Bu işlem geri alınamaz."
+                           class="px-4 py-2 bg-red-700 text-white rounded hover:bg-red-800 transition">
+                       Çöp Kutusunu Boşalt
+                   </button>
+               </div>
 
                 <h3 class="text-xl font-semibold mt-8 mb-4 text-gray-700">Silinmiş Kategoriler</h3>
                 @forelse($trashedCategories as $category)
                     <div class="flex justify-between items-center p-2 border-b">
                         <span>{{ $category->name }}</span>
                         <div>
-                            <button wire:click="restoreCategory({{ $category->id }})" class="text-green-500 hover:text-green-700">Geri Yükle</button>
-                            <button wire:click="forceDeleteCategory({{ $category->id }})" wire:confirm="Bu kategoriyi kalıcı olarak silmek istediğinizden emin misiniz? İlişkili tüm notlar da silinecektir!" class="ml-4 text-red-500 hover:text-red-700">Kalıcı Sil</button>
+                            <button wire:click="restoreCategory({{ $category->id }})" class="text-green-600 hover:text-green-800 font-semibold transition">Geri Yükle</button>
+                            <button wire:click="forceDeleteCategory({{ $category->id }})" wire:confirm="Bu kategoriyi kalıcı olarak silmek istediğinizden emin misiniz? İlişkili tüm notlar da silinecektir!" class="ml-4 text-red-600 hover:text-red-800 font-semibold transition">Kalıcı Sil</button>
                         </div>
                     </div>
                 @empty
@@ -82,7 +90,14 @@
 
         @elseif($showArchive)
             <div class="p-4 bg-gray-200 rounded shadow">
-                <h2 class="text-2xl font-bold mb-6 text-blue-600/80">Arşiv</h2>
+                <div class="flex justify-between">
+                    <h2 class="text-2xl font-bold text-blue-600/80">Arşiv</h2>
+                    <button wire:click="emptyArchive"
+                            onclick="return confirm('Arşivi boşaltmak istediğinizden emin misiniz? Buradan silinen notları çöp kutusunda bulabilirsiniz.')"
+                            class="px-4 py-2 bg-blue-700 text-white rounded hover:bg-blue-800 transition">
+                        Arşivi Boşalt
+                    </button>
+                </div>
 
                 <h3 class="text-xl font-semibold mt-8 mb-4 text-gray-700">Arşivlenmiş Kategoriler</h3>
                 @forelse($archivedCategories as $category)

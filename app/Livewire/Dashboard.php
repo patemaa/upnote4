@@ -68,12 +68,11 @@ class Dashboard extends Component
     public function updatedSearch()
     {
         if (strlen($this->search) >= 1) {
-            $categories = Category::where('name', 'like', '%' . $this->search . '%')->get()->map(function ($category) {
+            $categories = Category::search($this->search)->get()->map(function ($category) {
                 return ['id' => $category->id, 'name' => $category->name, 'type' => 'category'];
             });
 
-            $notes = Note::where('title', 'like', '%' . $this->search . '%')
-                ->orWhere('body', 'like', '%' . $this->search . '%')
+            $notes = Note::search($this->search)
                 ->get()
                 ->map(function ($note) {
                     return ['id' => $note->id, 'title' => $note->title, 'type' => 'note'];
@@ -99,6 +98,23 @@ class Dashboard extends Component
         }
         $this->searchResults = [];
         $this->search = '';
+    }
+
+    public function emptyTrash()
+    {
+        Note::onlyTrashed()->forceDelete();
+        Category::onlyTrashed()->forceDelete();
+    }
+
+    public function emptyArchive()
+    {
+        Note::query()
+            ->where('is_archived', true)
+            ->delete();
+
+        Category::query()
+            ->where('is_archived', true)
+            ->delete();
     }
 
     public function render()
