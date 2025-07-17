@@ -18,13 +18,36 @@ class Categories extends Component
     #[Url(as: 'category')]
     public ?int $selectedCategoryId = null;
 
-    #[Url(as: 'cs')]
     public string $search = '';
+
+    protected $listeners = [
+        'categorySelected' => 'handleCategorySelected', // Rename the original listener
+        'categorySelectedFromSearch' => 'selectCategoryAndFirstNote', // New listener for selection from search
+    ];
 
     public function mount()
     {
         if ($this->selectedCategoryId) {
             $this->dispatch('categorySelected', categoryId: $this->selectedCategoryId);
+        }
+    }
+
+    public function handleCategorySelected(int $categoryId)
+    {
+        $this->selectedCategoryId = $categoryId;
+    }
+
+    public function selectCategoryAndFirstNote(int $categoryId)
+    {
+        $this->selectedCategoryId = $categoryId;
+        $this->dispatch('categorySelected', categoryId: $categoryId); // Keep this for potential UI updates in Categories
+
+        $firstNote = Note::where('category_id', $categoryId)->latest()->first();
+
+        if ($firstNote) {
+            $this->dispatch('firstNoteSelectedInCategory', noteId: $firstNote->id);
+        } else {
+            $this->dispatch('clearEditor');
         }
     }
 

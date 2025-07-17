@@ -5,7 +5,6 @@ namespace App\Livewire;
 use App\Models\Category;
 use App\Models\Note;
 use Livewire\Component;
-use Livewire\Attributes\Url;
 
 class Notes extends Component
 {
@@ -13,15 +12,9 @@ class Notes extends Component
     public $showArchive = false;
     public $trashedNotes = [];
     public $archivedNotes = [];
-
-    #[Url(as: 'note')]
     public ?int $selectedNoteId = null;
-
-    #[Url(as: 'category')]
     public ?int $selectedCategoryIdForNotes = null;
     public $categoryName = 'All Notes';
-
-    #[Url(as: 's')]
     public string $search = '';
 
     protected $listeners = [
@@ -31,6 +24,7 @@ class Notes extends Component
         'clearEditor' => 'clearSelection',
         'categorySelected' => 'filterNotesByCategory',
         'firstNoteSelectedInCategory' => 'handleFirstNoteSelectedInCategory',
+        'searchUpdated' => 'filterNotesBySearch',
     ];
 
     public function mount()
@@ -88,6 +82,11 @@ class Notes extends Component
             $category = Category::find($categoryId);
             $this->categoryName = $category ? $category->name : 'Kategori Bulunamadı';
         }
+    }
+
+    public function filterNotesBySearch(string $search)
+    {
+        $this->search = $search;
     }
 
     public function deleteNote(int $noteId)

@@ -13,15 +13,6 @@
         </form>
     @endif
 
-    <div class="relative">
-        <input
-                type="text"
-                wire:model.live.debounce.300ms="search"
-                placeholder="Search category"
-                class="w-full px-3 py-1 rounded-md border border-sky-400/50 bg-sky-300/30 focus:outline-none focus:ring-1 focus:ring-sky-800/80 text-gray-800 dark:placeholder-gray-200 placeholder-gray-500"
-        >
-    </div>
-
     <ul class="flex-grow overflow-y-auto">
         @forelse($categories as $category)
             <li wire:key="{{ $category->id }}"
