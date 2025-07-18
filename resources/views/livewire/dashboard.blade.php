@@ -1,11 +1,11 @@
 <div>
-    <div class="px-[100px] p-4 flex justify-between items-center overflow-hidden relative">
-        <div class="relative space-y-2">
+    <div class="px-[100px] p-4 flex justify-between items-center relative">
+        <div class="relative w-[905px]">
             <input type="text" wire:model.live="search" placeholder="Search..."
-                   class="w-[905px] p-2 border rounded overflow-hidden">
+                   class="w-full p-2 border rounded">
 
             @if (strlen(trim($search)) >= 1)
-                <div class="absolute z-50 w-[905px] bg-white border border-gray-300 rounded shadow-md overflow-hidden pr-10">
+                <div class="absolute left-0 top-full mt-1 w-full bg-white border border-gray-300 rounded shadow-lg z-50">
                     <ul>
                         @forelse ($searchResults as $result)
                             <li wire:click="selectSearchResult({{ $result['id'] }}, '{{ $result['type'] }}')"
