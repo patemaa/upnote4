@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use App\Models\Category;
 use App\Models\Note;
+use Livewire\Attributes\Url;
 use Livewire\Component;
 
 class Notes extends Component
@@ -12,7 +13,8 @@ class Notes extends Component
     public $showArchive = false;
     public $trashedNotes = [];
     public $archivedNotes = [];
-    public ?int $selectedNoteId = null;
+    #[Url(as: 'note')]
+    public $selectedNoteId = null;
     public ?int $selectedCategoryIdForNotes = null;
     public $categoryName = 'All Notes';
     public string $search = '';
@@ -101,7 +103,7 @@ class Notes extends Component
         $this->selectedNoteId = null;
     }
 
-    public function selectNote($noteId)
+    public function selectNote(?int $noteId)
     {
         if ($this->selectedNoteId === $noteId) {
             $this->selectedNoteId = null;
@@ -184,6 +186,17 @@ class Notes extends Component
         }
     }
 
+    public function toggleFavorite(int $noteId)
+    {
+        $note = Note::findOrFail($noteId);
+        $note->update(['is_favorited' => !$note->is_favorited]);
+    }
+    public function togglePinned(int $noteId)
+    {
+        $note = Note::findOrFail($noteId);
+        $note->update(['is_pinned' => !$note->is_pinned]);
+    }
+
     public function render()
     {
         $notesQuery = Note::query()
@@ -201,6 +214,8 @@ class Notes extends Component
                         ->orWhere('body', 'like', '%' . $this->search . '%');
                 });
             })
+            ->orderByDesc('is_pinned')
+            ->orderByDesc('is_favorited')
             ->orderBy('order_column', 'asc');
 
         $notes = $notesQuery->get();
