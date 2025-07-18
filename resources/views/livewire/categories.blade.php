@@ -11,17 +11,17 @@
         <input x-ref="nameInput" type="text" wire:model.defer="newCategoryName" placeholder="Name"
                class="border rounded px-2 py-1 w-full text-gray-900">
         <button type="submit"
-                class="bg-sky-500/80 hover:bg-sky-700/80 text-white px-3 rounded transition duration-300">+</button>
+                class="bg-sky-500/80 hover:bg-sky-700/80 text-white px-3 rounded transition duration-300">+
+        </button>
     </form>
 
     <ul x-data
         x-init="
             new Sortable($el, {
-                animation: 150, // Animasyon süresi
-                ghostClass: 'bg-sky-200/50', // Sürüklenen elemanın hayaletinin stili
-                handle: '.handle', // Sadece bu class'a sahip elemandan sürüklemeyi başlat
+                animation: 150,
+                ghostClass: 'bg-gray-200/50',
+                handle: '.handle',
                 onEnd: () => {
-                    // Sıralama bitince ID'leri al ve Livewire'a gönder
                     let ids = Array.from($el.children).map(child => child.getAttribute('wire:key'));
                     $wire.call('updateCategoryOrder', ids);
                 }
@@ -35,13 +35,15 @@
                 class="group py-1 px-1 bg-sky-400/50 border border-sky-400/50 hover:bg-sky-600/80 rounded mb-2 flex justify-between items-center transition duration-300 cursor-grab active:cursor-grabbing
         @if($selectedCategoryIdInt === $category->id) bg-sky-700/80 hover:bg-sky-600 @endif">
 
-                <div class="handle pr-2 text-white cursor-grab">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                <div class="handle text-white cursor-grab opacity-0 group-hover:opacity-100 transition duration-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                         stroke="currentColor" class="size-5">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                              d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/>
                     </svg>
                 </div>
 
-                <span wire:click="selectCategory({{ $category->id }})" class="w-full pl-2">{{ $category->name }}</span>
+                <span wire:click="selectCategory({{ $category->id }})" class="w-full pl-1">{{ $category->name }}</span>
 
                 <div class="flex space-x-1 opacity-0 group-hover:opacity-100 transition duration-300">
                     <button wire:click.stop="archiveCategory({{ $category->id }})"
