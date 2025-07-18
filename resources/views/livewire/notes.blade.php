@@ -47,6 +47,41 @@
                     {{ Str::limit($noteItem->title ?: 'Başlıksız Not', 15) }}
                 </span>
                 <div class="flex space-x-1 opacity-0 group-hover:opacity-100 transition duration-300">
+                    <button wire:click.stop="togglePinned({{ $noteItem->id }})"
+                            class="text-gray-800 dark:text-white hover:text-purple-400 transition duration-300">
+                        @if($noteItem->is_pinned)
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                 fill="currentColor" class="icon icon-tabler icons-tabler-filled icon-tabler-pin text-purple-400">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                <path d="M15.113 3.21l.094 .083l5.5 5.5a1 1 0 0 1 -1.175 1.59l-3.172 3.171l-1.424 3.797a1 1 0 0 1 -.158 .277l-.07 .08l-1.5 1.5a1 1 0 0 1 -1.32 .082l-.095 -.083l-2.793 -2.792l-3.793 3.792a1 1 0 0 1 -1.497 -1.32l.083 -.094l3.792 -3.793l-2.792 -2.793a1 1 0 0 1 -.083 -1.32l.083 -.094l1.5 -1.5a1 1 0 0 1 .258 -.187l.098 -.042l3.796 -1.425l3.171 -3.17a1 1 0 0 1 1.497 -1.26z"/>
+                            </svg>
+                        @else
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                 fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                                 stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-pin">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                <path d="M15 4.5l-4 4l-4 1.5l-1.5 1.5l7 7l1.5 -1.5l1.5 -4l4 -4"/>
+                                <path d="M9 15l-4.5 4.5"/>
+                                <path d="M14.5 4l5.5 5.5"/>
+                            </svg>
+                        @endif
+                    </button>
+                    <button wire:click.stop="toggleFavorite({{ $noteItem->id }})"
+                            class="text-gray-800 dark:text-white hover:text-yellow-400 transition duration-300">
+                        @if($noteItem->is_favorited)
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24"
+                                 stroke-width="1.5" stroke="currentColor" class="size-5 text-yellow-400">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                      d="M11.48 3.5a.562.562 0 0 1 1.04 0l2.125 5.11a.563.563 0 0 0 .475.346l5.518.441c.5.04.702.663.32 1.012l-4.204 3.601a.563.563 0 0 0-.182.558l1.285 5.384a.562.562 0 0 1-.84.611l-4.725-2.886a.562.562 0 0 0-.586 0l-4.725 2.886a.562.562 0 0 1-.84-.61l1.285-5.385a.563.563 0 0 0-.182-.558L2.553 10.41a.562.562 0 0 1 .32-1.011l5.518-.441a.563.563 0 0 0 .475-.346l2.125-5.11Z"/>
+                            </svg>
+                        @else
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                                 stroke="currentColor" class="size-5">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                      d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.32 1.011l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 21.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .32-1.011l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z"/>
+                            </svg>
+                        @endif
+                    </button>
                     <button wire:click.stop="archiveNote({{ $noteItem->id }})"
                             class="text-gray-800 dark:text-white hover:text-gray-500 transition duration-300">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
