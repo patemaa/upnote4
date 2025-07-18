@@ -12,10 +12,14 @@ class Dashboard extends Component
     public array $searchResults = [];
     public bool $showTrash = false;
     public bool $showArchive = false;
+    public bool $showFavorites = false;
+    public bool $showPinned = false;
 
     public function toggleTrash()
     {
         $this->showArchive = false;
+        $this->showFavorites = false;
+        $this->showPinned = false;
         $this->showTrash = !$this->showTrash;
         $this->reset('search', 'searchResults');
     }
@@ -23,7 +27,26 @@ class Dashboard extends Component
     public function toggleArchive()
     {
         $this->showTrash = false;
+        $this->showFavorites = false;
+        $this->showPinned = false;
         $this->showArchive = !$this->showArchive;
+        $this->reset('search', 'searchResults');
+    }
+
+    public function toggleFavorites()
+    {
+        $this->showTrash = false;
+        $this->showArchive = false;
+        $this->showPinned = false;
+        $this->showFavorites = !$this->showFavorites;
+        $this->reset('search', 'searchResults');
+    }
+    public function togglePinned()
+    {
+        $this->showTrash = false;
+        $this->showArchive = false;
+        $this->showFavorites = false;
+        $this->showPinned = !$this->showPinned;
         $this->reset('search', 'searchResults');
     }
 
@@ -31,6 +54,8 @@ class Dashboard extends Component
     {
         $this->showTrash = false;
         $this->showArchive = false;
+        $this->showFavorites = false;
+        $this->showPinned = false;
     }
 
     public function restoreCategory(int $categoryId)
@@ -64,6 +89,12 @@ class Dashboard extends Component
     {
         Note::findOrFail($noteId)->update(['is_archived' => false, 'archived_at' => null]);
     }
+
+    public function unfavoriteNote(int $noteId)
+    {
+        Note::findOrFail($noteId)->update(['is_favorited' => false]);
+    }
+
 
     public function updatedSearch()
     {
@@ -110,11 +141,43 @@ class Dashboard extends Component
     {
         Note::query()
             ->where('is_archived', true)
-            ->delete();
+            ->update(['is_archived' => false]);
 
         Category::query()
             ->where('is_archived', true)
-            ->delete();
+            ->update(['is_archived' => false,]);
+    }
+
+    public function emptyFavorites()
+    {
+        Note::query()
+            ->where('is_favorited', true)
+            ->update(['is_favorited' => false]);
+    }
+    public function emptyPinned()
+    {
+        Note::query()
+            ->where('is_pinned', true)
+            ->update(['is_pinned' => false]);
+    }
+
+
+    public function pinNote(int $noteId)
+    {
+        Note::findOrFail($noteId)->update(['is_pinned' => true]);
+    }
+
+    public function unpinNote(int $noteId)
+    {
+        Note::findOrFail($noteId)->update(['is_pinned' => false]);
+    }
+
+    public function restoreAllNotes()
+    {
+        Note::onlyTrashed()->restore();
+        Category::onlyTrashed()->restore();
+
+        $this->dispatch('$refresh');
     }
 
     public function render()
@@ -126,6 +189,18 @@ class Dashboard extends Component
         } elseif ($this->showArchive) {
             $data['archivedCategories'] = Category::where('is_archived', true)->latest()->get();
             $data['archivedNotes'] = Note::where('is_archived', true)->latest()->get();
+        } elseif ($this->showFavorites) {
+            $data['favoritedNotes'] = Note::where('is_favorited', true)
+                ->whereNull('deleted_at')
+                ->where('is_archived', false)
+                ->latest()
+                ->get();
+        } elseif ($this->showPinned) { // YENİ: Sabitlenmiş notları getiren blok
+            $data['pinnedNotes'] = Note::where('is_pinned', true)
+                ->whereNull('deleted_at')
+                ->where('is_archived', false)
+                ->latest()
+                ->get();
         }
 
         return view('livewire.dashboard', $data);
