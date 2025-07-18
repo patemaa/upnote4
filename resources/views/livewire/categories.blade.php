@@ -27,7 +27,8 @@
                 }
             });
         "
-        class="flex-grow overflow-y-auto">
+        class="flex-grow overflow-y-auto"
+    >
 
         @forelse($categories as $category)
             <li wire:key="{{ $category->id }}"

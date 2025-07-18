@@ -16,13 +16,34 @@
         </button>
     </form>
 
-    <ul class="flex-grow overflow-y-auto">
+    <ul class="flex-grow overflow-y-auto"
+        x-data
+        x-init="
+            new Sortable($el, {
+                animation: 150,
+                ghostClass: 'bg-sky-200/50',
+                handle: '.handle',
+                onEnd: () => {
+                    let ids = Array.from($el.children).map(child => child.getAttribute('wire:key'));
+                    $wire.call('updateNoteOrder', ids);
+                }
+            });
+        "
+    >
         @forelse($notes as $noteItem)
             <li wire:key="{{ $noteItem->id }}"
-                class="group py-1 px-1 bg-pink-500/50 border border-pink-500/50 hover:bg-pink-700/80 cursor-pointer rounded mb-2 flex justify-between items-center transition duration-300
+                class="group py-1 px-1 bg-pink-500/50 border border-pink-500/50 hover:bg-pink-700/80 rounded mb-2 flex items-center transition duration-300
                 {{ $noteItem->id == $selectedNoteId ? 'bg-pink-800/80' : '' }}">
+                <div class="handle pr-2 text-white cursor-grab">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                         stroke="currentColor" class="size-5">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                              d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/>
+                    </svg>
+                </div>
+
                 <span wire:click="selectNote({{ $noteItem->id }})"
-                      class="w-full">
+                      class="flex-grow cursor-pointer">
                     {{ Str::limit($noteItem->title ?: 'Başlıksız Not', 15) }}
                 </span>
                 <div class="flex space-x-1 opacity-0 group-hover:opacity-100 transition duration-300">

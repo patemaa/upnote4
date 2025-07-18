@@ -177,13 +177,23 @@ class Notes extends Component
         $this->showTrash = false;
     }
 
+    public function updateNoteOrder($orderedIds)
+    {
+        foreach ($orderedIds as $index => $id) {
+            Note::where('id', $id)->update(['order_column' => $index + 1]);
+        }
+    }
+
     public function render()
     {
-        $notes = Note::latest()
+        $notesQuery = Note::query()
             ->whereNull('deleted_at')
             ->where('is_archived', false)
             ->when($this->selectedCategoryIdForNotes, function ($query) {
                 return $query->where('category_id', $this->selectedCategoryIdForNotes);
+            })
+            ->when(!$this->selectedCategoryIdForNotes && !$this->showTrash && !$this->showArchive, function ($query) {
+                return $query;
             })
             ->when($this->search, function ($query) {
                 return $query->where(function ($q) {
@@ -191,11 +201,14 @@ class Notes extends Component
                         ->orWhere('body', 'like', '%' . $this->search . '%');
                 });
             })
-            ->get();
+            ->orderBy('order_column', 'asc');
+
+        $notes = $notesQuery->get();
+
 
         $this->trashedNotes = Note::onlyTrashed()->latest()->get();
 
-        $this->archivedNotes = Note::latest()
+        $archivedNotesQuery = Note::query()
             ->where('is_archived', true)
             ->whereNull('deleted_at')
             ->when($this->selectedCategoryIdForNotes, function ($query) {
@@ -207,7 +220,9 @@ class Notes extends Component
                         ->orWhere('body', 'like', '%' . $this->search . '%');
                 });
             })
-            ->get();
+            ->orderBy('order_column', 'asc');
+
+        $this->archivedNotes = $archivedNotesQuery->get();
 
         return view('livewire.notes', [
             'notes' => $notes,
