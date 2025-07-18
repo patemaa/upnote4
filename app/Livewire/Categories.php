@@ -162,15 +162,23 @@ class Categories extends Component
         $this->showTrash = false;
     }
 
+    public function updateCategoryOrder($orderedIds)
+    {
+        foreach ($orderedIds as $index => $id) {
+            Category::where('id', $id)->update(['order_column' => $index + 1]);
+        }
+    }
+
     public function render()
     {
         $baseQuery = Category::query()
             ->when($this->search, function ($query) {
                 $query->where('name', 'like', '%' . $this->search . '%');
             })
-            ->latest();
+            ->orderBy('order_column', 'asc');
 
         $categories = (clone $baseQuery)->where('is_archived', false)->get();
+
         $trashedCategories = Category::onlyTrashed()
             ->when($this->search, function ($query) {
                 $query->where('name', 'like', '%' . $this->search . '%');
