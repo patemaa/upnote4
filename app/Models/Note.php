@@ -17,6 +17,8 @@ class Note extends Model
         'title',
         'body',
         'is_archived',
+        'is_favorited',
+        'is_pinned',
     ];
 
     protected $casts = [
