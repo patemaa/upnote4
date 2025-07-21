@@ -4,8 +4,70 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1dfed89b28650f62985bb103f5ced413",
+    "content-hash": "38a366271fbcf6c987aa605b59ae5127",
     "packages": [
+        {
+            "name": "afatmustafa/blade-hugeicons",
+            "version": "v1.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/afatmustafa/blade-hugeicons.git",
+                "reference": "c7bbbd26898b2f6637886c749f0b587aa1c51f66"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/afatmustafa/blade-hugeicons/zipball/c7bbbd26898b2f6637886c749f0b587aa1c51f66",
+                "reference": "c7bbbd26898b2f6637886c749f0b587aa1c51f66",
+                "shasum": ""
+            },
+            "require": {
+                "blade-ui-kit/blade-icons": "^1.1|^1.8",
+                "illuminate/support": "^10.0|^11.0|^12.0",
+                "php": "^8.1"
+            },
+            "require-dev": {
+                "laravel/pint": "^1.21",
+                "orchestra/testbench": "^8.0|^9.0|^10.0",
+                "phpunit/phpunit": "^10.1|^11.5|^12.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Afatmustafa\\HugeIcons\\BladeHugeIconsServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Afatmustafa\\HugeIcons\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Mustafa Afat",
+                    "email": "mustafa@afat.me",
+                    "homepage": "https://afat.me",
+                    "role": "Developer"
+                }
+            ],
+            "description": "A package to easily make use of Hugeicons(Free version) in your Laravel Blade views.",
+            "homepage": "https://github.com/afatmustafa/blade-hugeicons",
+            "keywords": [
+                "Hugeicons",
+                "blade",
+                "laravel"
+            ],
+            "support": {
+                "issues": "https://github.com/afatmustafa/blade-hugeicons/issues",
+                "source": "https://github.com/afatmustafa/blade-hugeicons/tree/v1.0.2"
+            },
+            "time": "2025-05-01T21:23:37+00:00"
+        },
         {
             "name": "blade-ui-kit/blade-heroicons",
             "version": "2.6.0",
@@ -284,6 +346,78 @@
                 }
             ],
             "time": "2024-02-09T16:56:22+00:00"
+        },
+        {
+            "name": "codeat3/blade-coolicons",
+            "version": "1.6.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/codeat3/blade-coolicons.git",
+                "reference": "62888f5ab7571ea9c63991c5935e9986a4fc534e"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/codeat3/blade-coolicons/zipball/62888f5ab7571ea9c63991c5935e9986a4fc534e",
+                "reference": "62888f5ab7571ea9c63991c5935e9986a4fc534e",
+                "shasum": ""
+            },
+            "require": {
+                "blade-ui-kit/blade-icons": "^1.1",
+                "illuminate/support": "^8.0|^9.0|^10.0|^11.0|^12.0",
+                "php": "^7.4|^8.0"
+            },
+            "require-dev": {
+                "codeat3/blade-icon-generation-helpers": "^0.10",
+                "codeat3/phpcs-styles": "^1.0",
+                "orchestra/testbench": "^6.0|^7.0|^8.0|^9.0|^10.0",
+                "phpunit/phpunit": "^9.0|^10.5|^11.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Codeat3\\BladeCoolicons\\BladeCooliconsServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Codeat3\\BladeCoolicons\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Swapnil Sarwe",
+                    "homepage": "https://swapnilsarwe.com"
+                },
+                {
+                    "name": "Dries Vints",
+                    "homepage": "https://driesvints.com"
+                }
+            ],
+            "description": "A package to easily make use of Coolicons in your Laravel Blade views.",
+            "homepage": "https://github.com/codeat3/blade-coolicons",
+            "keywords": [
+                "blade",
+                "coolicons",
+                "icons",
+                "laravel"
+            ],
+            "support": {
+                "issues": "https://github.com/codeat3/blade-coolicons/issues",
+                "source": "https://github.com/codeat3/blade-coolicons/tree/1.6.0"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/swapnilsarwe",
+                    "type": "github"
+                }
+            ],
+            "time": "2025-02-26T08:52:40+00:00"
         },
         {
             "name": "codeat3/blade-majestic-icons",
